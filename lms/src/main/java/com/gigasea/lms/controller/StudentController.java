@@ -1,19 +1,22 @@
 package com.gigasea.lms.controller;
 
+import com.gigasea.lms.model.Course;
 import com.gigasea.lms.model.Student;
+import com.gigasea.lms.service.CourseService;
 import com.gigasea.lms.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class StudentController {
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private CourseService courseService;
     @GetMapping("/students") //End Point
     public String students(Model model){
         model.addAttribute("students", studentService.findStudnets());
@@ -40,5 +43,22 @@ public class StudentController {
     public String deleteStudent(@PathVariable Long id){
         studentService.deleteSutdent(id);
         return "redirect:/students";
+    }
+    @GetMapping("/assignCourse")
+    public String showAssignCourseForm(Model model){
+        List<Course> courses =courseService.findcourses();
+        model.addAttribute("courses", courses);
+        return "assignCourse";
+    }
+    @PostMapping("/addCourseToStudent")
+    public String addCourseToStudent(@RequestParam Long studentId, @RequestParam Long courseId){
+        studentService.addCourseToStudent(studentId,courseId);
+        return "redirect:/students";
+    }
+    @GetMapping("/studentsWithCourses")
+    public String studentWithCourses(Model model){
+        List<Student> students = studentService.findStudnets();
+        model.addAttribute("students", students);
+        return "studentsWithCourses";
     }
 }
